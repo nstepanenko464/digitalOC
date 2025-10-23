@@ -22,6 +22,8 @@ def calculate_success(df: pd.DataFrame) -> pd.DataFrame:
     down = df['down']
     ydstogo = df['ydstogo']
     yards_gained = df['yards_gained']
+    interception = df['interception']
+    fumble_lost = df['fumble_lost']
 
     # conditions for np.select:
     # order of steps is important!
@@ -31,6 +33,8 @@ def calculate_success(df: pd.DataFrame) -> pd.DataFrame:
     # automatic successes (touchdowns or first downs)
         (df['touchdown'] == 1),
         (df['first_down_rush'] == 1),
+        (df['interception'] == 0),
+        (df['fumble_lost'] == 0),
 
     # down-based success logic
         (down == 1) & (yards_gained >= 0.40 * ydstogo),
@@ -42,7 +46,8 @@ def calculate_success(df: pd.DataFrame) -> pd.DataFrame:
     # outcomes for each condition:
     # 1 corresponds to success, 0 to failure.
     outcomes = [
-        #   0,  # Turnover = Failure
+        0,  # Interception = Failure
+        0,  # Fumble = Failure
         1,  # Touchdown = Success
         1,  # First Down = Success
         1,  # 1st down success
@@ -73,7 +78,7 @@ if __name__ == "__main__":
     print("Data frame with success column:")
 
     # display relevant columns to check the logic
-    result_cols = ['down', 'ydstogo', 'yards_gained', 'first_down_rush', 'touchdown', 'success']
+    result_cols = ['down', 'ydstogo', 'yards_gained', 'first_down_rush', 'touchdown', 'interception', 'fumble_lost', 'success']
     display_cols = [col for col in result_cols if col in pbp_df_with_success.columns]
     print(pbp_df_with_success[display_cols].head())
 
